@@ -1,7 +1,11 @@
-﻿using App.Persistence.Contexts;
+﻿using App.Application.Repositories;
+using App.Infrastucture;
+using App.Infrastucture.Repositories;
+using App.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +18,17 @@ namespace App.Persistence
     {
         public static void AddPersistenceServices(this IServiceCollection services)
         {
-            ConfigurationManager manager = new(); // Nuget Microsoft.Extensions.Configuration and Microsoft.Extensions.Configuration.Json
-            manager.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../../Presentation/App.API"));
-            manager.AddJsonFile("appsettings.json");
-             
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(manager.GetConnectionString("Default")));
+            services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(Configuration.ConnectionString));
+
+
+            services.AddScoped<ICustomerReadRepository, CustomerReadRepository>();
+            services.AddScoped<ICustomerWriteRepository, CustomerWriteRepository>();
+            services.AddScoped<IOrderReadRepository, OrderReadRepository>();
+            services.AddScoped<IOrderWriteRepository, OrderWriteRepository>();
+            services.AddScoped<IProductReadRepository, ProductReadRepository>();
+            services.AddScoped<IProductWriteRepository, ProductWriteRepository>();
+
         }
     }
 }
