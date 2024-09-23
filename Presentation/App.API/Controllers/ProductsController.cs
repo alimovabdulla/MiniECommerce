@@ -10,31 +10,26 @@ namespace App.API.Controllers
     {
         readonly private IProductReadRepository _productReadRepository;
         readonly private IProductWriteRepository _productWriteRepository;
+        readonly private IOrderWriteRepository _orderWriteRepository;
+        readonly private ICustomerWriteRepository _customerWriteRepository;
 
 
-        public ProductsController(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository)
+        public ProductsController(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository, IOrderWriteRepository orderWriteRepository, ICustomerWriteRepository customerWriteRepository)
         {
             _productReadRepository = productReadRepository;
             _productWriteRepository = productWriteRepository;
+            _orderWriteRepository = orderWriteRepository;
+            _customerWriteRepository = customerWriteRepository;
         }
         [HttpGet]
         public async Task Get()
         {
-            _productWriteRepository.AddRangeAsync(new()
-            {
-                new(){Name="Apple", Price= 56, CreatedTime= DateTime.Now, Stock= 10 },
+            var customerId = Guid.NewGuid();
+            await _customerWriteRepository.AddAsync(new() { Id = customerId, Name = "Coni" });
+            await _orderWriteRepository.AddAsync(new() { Address = "Baku", Description = "Bomba kimi", CustomerId = customerId });
+            await _orderWriteRepository.AddAsync(new() { Address = "Xacmnnaz", Description = "Bomba kimi 2", CustomerId = customerId });
+            await _orderWriteRepository.SaveAsync();
 
-                new(){Name="Samsung", Price= 33, CreatedTime= DateTime.Now, Stock= 22 },
-
-                new(){Name="Techno", Price= 54, CreatedTime= DateTime.Now, Stock= 23 },
-
-                new(){Name="Nokia", Price= 12, CreatedTime= DateTime.Now, Stock= 65 },
-
-                new(){Name="Hawei", Price= 78, CreatedTime= DateTime.Now, Stock= 34 },
-
-
-            });
-            await _productWriteRepository.SaveAsync();
         }
 
     }
